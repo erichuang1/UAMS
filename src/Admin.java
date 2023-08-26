@@ -1,13 +1,26 @@
 public class Admin extends User {
 
-    public Admin(String userID, String username, String password, String email, String accountStatus,
-    boolean loginStatus, boolean isAdmin) {
-        createUser(userID, username, password, email, accountStatus, loginStatus, isAdmin);
-    }
-    
-    public void viewAllUsers() { // Displays a list of all users and their status.
+    public Admin(long userID, String username, String password, boolean isAdmin) {
+        super(userID, username, password, isAdmin);
     }
 
-    public void resetPassword() { // Resets the password of a given user.
+    // Displays a list of all users and their status
+    public String viewAllUsers() {
+        if (!this.isAdmin)
+            return null;
+        String s = "";
+        for (String username : usersList.keySet()) {
+            User user = usersList.get(username);
+            s += "=======================\n" + user.toString() + "\n";
+        }
+        s += "=======================";
+        return s;
+    }
+
+    // Resets the password of a given user
+    public void resetPassword(String username, String password) {
+        if (!this.isAdmin)
+            return;
+        usersList.get(username).password = User.getSalt(username, password);
     }
 }
