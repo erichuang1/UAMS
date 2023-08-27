@@ -5,6 +5,7 @@ public class App {
     public static void main(String[] args) {
         UAMS system = new UAMS();
         Scanner scanner = new Scanner(System.in);
+        ;
 
         while (true) {
             // stage 1 (before login)
@@ -27,15 +28,15 @@ public class App {
                         ErrorCode errorCode = system.login(username, password);
                         switch (errorCode) {
                             case LOGIN_SUCCESSFUL:
-                                System.out.println("Welcome, " + system.currentUsername + "! ");
+                                System.out.println("Welcome, " + system.currentUsername + "! \n");
                                 stage1 = false;
                                 break;
                             default:
-                                System.out.println("You have not been logged in. Reason: " + errorCode);
+                                System.out.println("You have not been logged in. Reason: " + errorCode + "\n");
                         }
                         break;
                     default:
-                        System.out.println("You've entered an incorrect command! ");
+                        System.out.println("You've entered an incorrect command! \n");
                 }
             } while (stage1);
 
@@ -47,68 +48,90 @@ public class App {
                 switch (command.toLowerCase()) {
                     case "createuser":
                         // enter isAdmin prompt
-                        boolean isAdmin;
-                        while (true) {  // loop while response isn't true/false
+                        boolean isAdmin1;
+                        do { // retry when response is invalid
                             System.out.print("isAdmin (true/false): ");
-                            String response = scanner.nextLine();
-                            if (response.toLowerCase().equals("true")) {
-                                isAdmin = true;
+                            String input1 = scanner.nextLine();
+                            if (input1.toLowerCase().equals("true")) {
+                                isAdmin1 = true;
                                 break;
-                            } else if (response.toLowerCase().equals("false")) {
-                                isAdmin = false;
+                            } else if (input1.toLowerCase().equals("false")) {
+                                isAdmin1 = false;
                                 break;
                             } else {
-                                System.out.println("Input not acceptable! ");
+                                System.out.println("Input not acceptable! \n");
                             }
-                        }
+                        } while (true);
 
-                        // enter username prompt
+                        // prompt enter username
                         System.out.print("Enter username: ");
-                        String username = scanner.nextLine();
+                        String username1 = scanner.nextLine();
 
-                        // enter password prompt
-                        Console console = System.console();
-                        char[] passwordArray = console.readPassword("Enter password: ");
-                        String password = new String(passwordArray);
+                        // prompt enter password 
+                        Console console1 = System.console();
+                        char[] passwordArray1 = console1.readPassword("Enter password: ");
+                        String password1 = new String(passwordArray1);
 
-                        // create user via UAMS
-                        system.createUser(username, password, stage2);
+                        // UAMS action (create user)
+                        ErrorCode err1 = system.createUser(username1, password1, isAdmin1);
+                        System.out.println("Status: " + err1 + "\n");
                         break;
                     case "deleteuser":
                         System.out.print("Enter username: ");
-                        system.reactivateUser(scanner.nextLine());
+                        String input2 = scanner.nextLine();
+
+                        // UAMS action (delete user)
+                        ErrorCode err2 = system.deleteUser(input2);
+
+                        System.out.println("Status: " + err2 + "\n");
                         break;
                     case "suspenduser":
                         System.out.print("Enter username: ");
-                        system.reactivateUser(scanner.nextLine());
+                        String input3 = scanner.nextLine();
+
+                        // UAMS action (suspend user)
+                        ErrorCode err3 = system.suspendUser(input3);
+
+                        System.out.println("Status: " + err3 + "\n");
                         break;
                     case "reactivateuser":
-                        // enter username prompt
+                        // prompt enter username
                         System.out.print("Enter username: ");
-                        system.reactivateUser(scanner.nextLine());
+                        String input4 = scanner.nextLine();
+
+                        // UAMS action (reactivate user)
+                        ErrorCode err4 = system.reactivateUser(input4);
+
+                        System.out.println("Status: " + err4 + "\n");
                         break;
                     case "viewallusers":
-                        System.out.println(system.viewAllUsers());
+                        // UAMS action (view all users)
+                        Result<String> result5 = system.viewAllUsers();
+
+                        System.out.println(result5.value);
+                        System.out.println("Status: " + result5.errorCode + "\n");
                         break;
                     case "resetpassword":
-                        // enter username prompt
+                        // prompt enter username
                         System.out.print("Enter username: ");
-                        String username2 = scanner.nextLine();
+                        String username6 = scanner.nextLine();
 
-                        // enter password prompt
-                        Console console2 = System.console();
-                        char[] passwordArray2 = console2.readPassword("Enter password: ");
-                        String password2 = new String(passwordArray2);
+                        // prompt enter password
+                        Console console6 = System.console();
+                        char[] passwordArray6 = console6.readPassword("Enter password: ");
+                        String password6 = new String(passwordArray6);
 
-                        // reset password via UAMS
-                        system.resetPassword(username2, password2);
+                        // UAMS action (reset password)
+                        ErrorCode err6 = system.resetPassword(username6, password6);
+
+                        System.out.println("Status: " + err6 + "\n");
                         break;
                     case "logout":
                         system.logout();
                         stage2 = false;
                         break;
                     default:
-                        System.out.println("You've entered an incorrect command! ");
+                        System.out.println("You've entered an incorrect command! \n");
                 }
             } while (stage2);
         }

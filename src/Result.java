@@ -1,13 +1,13 @@
 public class Result<T> {
     public T value;
-    public ErrorCode error;
+    public ErrorCode errorCode;
 
     Result(T value, ErrorCode error) {
         this.value = value;
-        this.error = error;
+        this.errorCode = error;
     }
 
     public boolean containsError() {
-        return error != null;
+        return errorCode != null;
     }
 }

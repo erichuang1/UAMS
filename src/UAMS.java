@@ -54,36 +54,32 @@ public class UAMS {
         setCurrentUser(null);
     }
 
-    // Passthrough methods
-    public void createUser(String username, String password, boolean isAdmin) {
-        currentUser.createUser(username, password, isAdmin);
+    // Passthrough user methods
+    public ErrorCode createUser(String username, String password, boolean isAdmin) {
+        return currentUser.createUser(username, password, isAdmin);
     }
 
-    public void deleteUser(String username) {
-        currentUser.deleteUser(username);
+    public ErrorCode deleteUser(String username) {
+        return currentUser.deleteUser(username);
     }
 
-    public void suspendUser(String username) {
-        currentUser.suspendUser(username);
+    public ErrorCode suspendUser(String username) {
+        return currentUser.suspendUser(username);
     }
 
-    public void reactivateUser(String username) {
-        currentUser.reactivateUser(username);
+    public ErrorCode reactivateUser(String username) {
+        return currentUser.reactivateUser(username);
     }
 
-    public String viewAllUsers() {
+    public Result<String> viewAllUsers() {
         if (currentUser instanceof Admin)
             return ((Admin) currentUser).viewAllUsers();
-        return null;
+        return new Result<String>(null, ErrorCode.INSUFFICIENT_PRIVILEGE);
     }
 
-    public void resetPassword(String username, String password) {
+    public ErrorCode resetPassword(String username, String password) {
         if (currentUser instanceof Admin)
-            ((Admin) currentUser).resetPassword(username, password);
+            return ((Admin) currentUser).resetPassword(username, password);
+        return ErrorCode.UNKNOWN_REASON;
     }
-
-    public void setAccountStatus(String username, AccountStatus accountStatus) {
-        currentUser.setAccountStatus(username, accountStatus);
-    }
-
 }
