@@ -1,17 +1,9 @@
 import java.util.HashMap;
 
-// I assumed all the methods under the user class is executable by them.
-
-// Though in common sense, a user shouldn't be able to delete, suspend or
-// reactivate another user, or even an Admin.
-
-// If I'd implement this in the way I've talked about, I might move all
-// sensetive actions to the admin class, to prevent any unauthorized
-// action/executions by user itself.
+// I assumed admin check is needed when executing certain methods under the user class.
 public class User {
-    public User(long userID, String username, String password,
-            boolean isAdmin) {
-        setAccountInfo(userID, username, password, "", AccountStatus.Active, isAdmin);
+    public User(long userID, String username, String password) {
+        setAccountInfo(userID, username, password, "", AccountStatus.Active);
     }
 
     // Calculate salted password hash
@@ -20,13 +12,12 @@ public class User {
         return Integer.toString(salt);
     }
 
-    // The attributes of the user class is public for more efficient development of
-    // the system. However it's crutial that the UAMS does not directly accept or
-    // provide access to any user object.
+    // The attributes of the user class is public for more efficient development
+    // of the system. However it's crutial that the UAMS does not directly accept
+    // or provide access to any user object.
     public long userID;
     public String username, password, email;
     public AccountStatus accountStatus;
-    public boolean isAdmin;
     public HashMap<String, User> usersList;
 
     // Output user profile as printable string
@@ -35,24 +26,24 @@ public class User {
                 + "username: " + username + "\n"
                 // + "password: " + password + "\n"
                 // + "email: " + email + "\n"
-                + "accountStatus: " + accountStatus + "\n"
-                + "isAdmin: " + isAdmin;
+                + "userGroup: " + this.getClass().getName() + "\n"
+                + "accountStatus: " + accountStatus;
     }
 
-    public void setAccountInfo(long userID, String username, String password, String email, AccountStatus accountStatus,
-            boolean isAdmin) {
+    public void setAccountInfo(long userID, String username, String password, String email, AccountStatus accountStatus) {
         this.userID = userID;
         this.username = username;
         this.password = password;
         this.email = email;
         this.accountStatus = accountStatus;
-        this.isAdmin = isAdmin;
     }
 
-    // Helper method to modify account status
+    // Helper method for modifying account status
     public ErrorCode setAccountStatus(String username, AccountStatus accountStatus) {
         if (!usersList.containsKey(username.toLowerCase()))
             return ErrorCode.USER_NON_EXIST;
+        if (usersList.get(username.toLowerCase()).accountStatus == AccountStatus.Deleted)
+            return ErrorCode.ACCOUNT_DELETED;
         usersList.get(username.toLowerCase()).accountStatus = accountStatus;
         return ErrorCode.OK;
     }
@@ -62,23 +53,23 @@ public class User {
         if (usersList.containsKey(username.toLowerCase()))
             return ErrorCode.USER_ALREADY_EXISTS;
         // non-admin users can only create non-admin users
-        if (!this.isAdmin)
+        if (!(this instanceof Admin))
             isAdmin = false;
         String salt = User.getSalt(username.toLowerCase(), password);
         User user;
         if (isAdmin)
-            user = new Admin(usersList.size(), username, salt, isAdmin);
+            user = new Admin(usersList.size(), username, salt);
         else
-            user = new User(usersList.size(), username, salt, isAdmin);
+            user = new User(usersList.size(), username, salt);
 
         usersList.put(user.username.toLowerCase(), user);
         return ErrorCode.OK;
     }
 
     // Removes an existing user
-    /* A user cannot delete another user's account, but can delete itself */
+    /* A user cannot delete another user's account, BUT can delete itself */
     public ErrorCode deleteUser(String username) {
-        if (this.isAdmin)
+        if (this instanceof Admin)
             return setAccountStatus(username, AccountStatus.Deleted);
         else if (username.toLowerCase().equals(this.username.toLowerCase()))
             return setAccountStatus(this.username, AccountStatus.Deleted);
@@ -88,7 +79,7 @@ public class User {
     // Temporarily disables a user from logging in
     /* Only an admin can suspend any user's account */
     public ErrorCode suspendUser(String username) {
-        if (!this.isAdmin)
+        if (!(this instanceof Admin))
             return ErrorCode.INSUFFICIENT_PRIVILEGE;
         return setAccountStatus(username, AccountStatus.Suspended);
     }
@@ -99,10 +90,8 @@ public class User {
      * cannot be reactivated
      */
     public ErrorCode reactivateUser(String username) {
-        if (!this.isAdmin)
+        if (!(this instanceof Admin))
             return ErrorCode.INSUFFICIENT_PRIVILEGE;
-        if (usersList.get(username.toLowerCase()).accountStatus == AccountStatus.Deleted)
-            return ErrorCode.ACCOUNT_DELETED;
         return setAccountStatus(username, AccountStatus.Active);
     }
 }

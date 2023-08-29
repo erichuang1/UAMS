@@ -4,7 +4,7 @@ import java.util.HashMap;
 public class UAMS {
     public UAMS() {
         String salt = User.getSalt("admin", "admin");
-        User user = new Admin(0, "admin", salt, true);
+        User user = new Admin(0, "admin", salt);
         usersList.put(user.username, user);
     }
 
@@ -80,6 +80,6 @@ public class UAMS {
     public ErrorCode resetPassword(String username, String password) {
         if (currentUser instanceof Admin)
             return ((Admin) currentUser).resetPassword(username, password);
-        return ErrorCode.UNKNOWN_REASON;
+        return ErrorCode.INSUFFICIENT_PRIVILEGE;
     }
 }

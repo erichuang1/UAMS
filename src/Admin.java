@@ -1,12 +1,12 @@
 public class Admin extends User {
 
-    public Admin(long userID, String username, String password, boolean isAdmin) {
-        super(userID, username, password, isAdmin);
+    public Admin(long userID, String username, String password) {
+        super(userID, username, password);
     }
 
     // Displays a list of all users and their status
     public Result<String> viewAllUsers() {
-        if (!this.isAdmin)
+        if (!(this instanceof Admin))
             return new Result<String>(null, ErrorCode.INSUFFICIENT_PRIVILEGE);
         String s = "";
         for (String username : usersList.keySet()) {
@@ -21,7 +21,9 @@ public class Admin extends User {
     public ErrorCode resetPassword(String username, String password) {
         if (!usersList.containsKey(username.toLowerCase()))
             return ErrorCode.USER_NON_EXIST;
-        if (!this.isAdmin)
+        if (usersList.get(username.toLowerCase()).accountStatus == AccountStatus.Deleted)
+            return ErrorCode.ACCOUNT_DELETED;
+        if (!(this instanceof Admin))
             return ErrorCode.INSUFFICIENT_PRIVILEGE;
         usersList.get(username).password = User.getSalt(username, password);
         return ErrorCode.OK;
