@@ -1,16 +1,18 @@
 # UAMS
-A User Account Management System
+A simulation of User Account Management System
 
 ## Getting Started
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+The system operates in two distinct stages. Stage 1 is dedicated to the login process, while Stage 2 encompasses a wide array of user actions and essential commands.
+
+To interact with the system, simply type the command without trailing information. If required, the system should prompt you to input extra information for the task. 
 
 ## Folder Structure
 
 The workspace contains two folders by default, where:
 
 - `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+- `lib`: the folder to maintain dependencies (no external dependency is used)
 
 Meanwhile, the compiled output files will be generated in the `bin` folder by default.
 
