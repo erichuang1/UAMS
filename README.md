@@ -13,6 +13,7 @@ The workspace contains two folders by default, where:
 
 - `src`: the folder to maintain sources
 - `lib`: the folder to maintain dependencies (no external dependency is used)
+- `docs`: the folder to containing the documentation and project outline
 
 Meanwhile, the compiled output files will be generated in the `bin` folder by default.
 
